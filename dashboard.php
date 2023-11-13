@@ -8,6 +8,6 @@
     <link rel="icon" type="image/png" sizes="16x16" href="images/loker4.png">
 </head>
 <body>
-    <h1>Selamat Datang di Website Kemex</h1>
+    <h1>SMART LOCKER</h1>
 </body>
 </html>
