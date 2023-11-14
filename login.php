@@ -3,12 +3,12 @@ include("conn.php");
 
 // Memeriksa jika form login disubmit
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['signin'])) {
-    $name = isset($_POST['name']) ? $_POST['name'] : '';
+    $name = isset($_POST['username']) ? $_POST['username'] : '';
     $password = isset($_POST['password']) ? $_POST['password'] : '';
 
     // Query untuk memeriksa apakah data sesuai dengan yang ada di database
     if (!empty($name) && !empty($password)) {
-        $sql = "SELECT * FROM user WHERE name='$name' AND password='$password'";
+        $sql = "SELECT * FROM user WHERE nama='$name' AND password='$password'";
         $result = $conn->query($sql);
 
         if ($result->num_rows == 1) {
@@ -81,8 +81,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['signin'])) {
 
     </div>
 
-    <!-- JS -->
+    <!-- JS
     <script src="vendor/jquery/jquery.min.js"></script>
-    <script src="js/main.js"></script>
+    <script src="js/main.js"></script> -->
 </body>
 </html>

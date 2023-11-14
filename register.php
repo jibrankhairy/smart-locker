@@ -81,9 +81,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['signup'])) {
 </div>
 
 <!-- JS -->
-<script src="vendor/jquery/jquery.min.js"></script>
+<!-- <script src="vendor/jquery/jquery.min.js"></script>
 <script src="js/main.js"></script>
-</body><!-- This templates was made by Colorlib (https://colorlib.com) -->
+</body>This templates was made by Colorlib (https://colorlib.com) -->
 </html>
 
 <?php
