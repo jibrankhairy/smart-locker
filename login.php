@@ -1,26 +1,31 @@
 <?php
 include("conn.php");
-
+// session_start();
+// if (isset($_SESSION['admin_username'])) {
+//     header("location:dashboard_admin.php");
+// }
+$username ="";
+$password ="";
+$err ="";
 // Memeriksa jika form login disubmit
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['signin'])) {
-    $name = isset($_POST['username']) ? $_POST['username'] : '';
-    $password = isset($_POST['password']) ? $_POST['password'] : '';
-
-    // Query untuk memeriksa apakah data sesuai dengan yang ada di database
-    if (!empty($name) && !empty($password)) {
-        $sql = "SELECT * FROM user WHERE nama='$name' AND password='$password'";
-        $result = $conn->query($sql);
-
-        if ($result->num_rows == 1) {
-            // Login berhasil
-            header("Location: dashboard.php");
-            exit(); // Pastikan untuk menghentikan eksekusi skrip setelah header redirect
-        } else {
-            // Login gagal
-            echo "Login gagal. Periksa kembali nama pengguna dan kata sandi.";
+if (isset($_POST['signin'])) {
+    $username   = $_POST['username'];
+    $password   = $_POST['password'];
+    if ($username == '' or $password == '') {
+        $err = "Silahan masukkan username dan password";
+    }
+    if (empty($err)) {
+        $sql1 =  "SELECT * FROM admin WHERE username = '$username'";
+        $q1 = mysqli_query($conn,$sql1);
+        $r1 = mysqli_fetch_array($q1);
+        if($r1['password'] != md5($password)){
+            $err = "Username atau Password salah";
         }
-    } else {
-        echo "Nama pengguna dan kata sandi tidak boleh kosong.";
+    }
+    if(empty($err)) {
+        $_SESSION['admin_username'] = $username;
+        header("location:dashboard_admin.php");
+        exit();
     }
 }
 ?>
@@ -66,6 +71,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['signin'])) {
                                 <label for="your_pass"><i class="zmdi zmdi-lock"></i></label>
                                 <input type="password" name="password" id="password" placeholder="Password"/>
                             </div>
+                            <?php
+                         if($err){
+                            echo "<ul>$err</ul>";
+                        }
+                        ?>
                             <div class="form-group">
                                 <input type="checkbox" name="remember-me" id="remember-me" class="agree-term" />
                                 <label for="remember-me" class="label-agree-term"><span><span></span></span>Remember me</label>
