@@ -69,31 +69,29 @@
                             <div class="card-body">
                                 <table id="datatablesSimple">
                                     <thead>
-                                        <tr>
+                                        <!-- <tr>
                                             <th>ID</th>
                                             <th>Nama</th>
                                             <th>Nim</th>
                                             <th>Email</th>
                                             <th>Password</th>
-                                        </tr>
+                                        </tr> -->
                                     </thead>
-                                    <tbody>
                                         <tr>
                                         <?php
                                         include 'user.php';
                                         $users = new user();
                                         foreach ($users->read() as $user) {
-                                            echo "<td>";
-                                            // echo "\n";
-                                            echo $user['id'];
-                                            // echo "\n";
-                                            echo "<tr>";
-                                            echo $user['nama']  ;
+                                            echo "<br>";
                                             echo "\n";
-                                            echo "<tr>";
+                                            echo $user['id'];
+                                            echo "\n";
+                                            echo $user['nama'];
+                                            echo "\n";
                                             echo $user['nim'];
+                                            echo "\n";
                                             echo $user['email'];
-                                            echo $user['password'];
+                                            // echo $user['password'];
                                             echo "</td>";
                                         }
                                         ?>
