@@ -8,8 +8,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['signup'])) {
     $email = $_POST['email'];
     $password = $_POST['password'];
 
+    // Enkripsi kata sandi menggunakan MD5 (tidak disarankan)
+    $hashedPassword = md5($password);
+
     // Query untuk menyimpan data ke dalam tabel 'user'
-    $sql = "INSERT INTO user (nama, nim, email, password) VALUES ('$username', '$nim', '$email', '$password')";
+    $sql = "INSERT INTO user (nama, nim, email, password) VALUES ('$username', '$nim', '$email', '$hashedPassword')";
 
     if ($conn->query($sql) === TRUE) {
         echo "Registrasi berhasil!";
@@ -18,6 +21,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['signup'])) {
     }
 }
 ?>
+
+
 
 <!DOCTYPE html>
 <html lang="en">

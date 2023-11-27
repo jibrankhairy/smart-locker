@@ -24,7 +24,7 @@ if (isset($_POST['signin'])) {
     }
     if(empty($err)) {
         $_SESSION['admin_username'] = $username;
-        header("location:dashboard_admin.php");
+        header("location:dashboard.php");
         exit();
     }
 }
