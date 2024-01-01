@@ -1,35 +1,68 @@
 <?php
 include("conn.php");
-// session_start();
-// if (isset($_SESSION['admin_username'])) {
-//     header("location:dashboard_admin.php");
-// }
-$username ="";
-$password ="";
-$err ="";
+session_start();
+if (isset($_SESSION['admin_username'])) {
+    header("location:dashboard.php");
+    exit();
+} elseif (isset($_SESSION['user_username'])) {
+    header("location:dashboard.php");
+    exit();
+}
+
+$username = "";
+$password = "";
+$err = "";
+
 // Memeriksa jika form login disubmit
 if (isset($_POST['signin'])) {
-    $username   = $_POST['username'];
-    $password   = $_POST['password'];
+    $username = $_POST['username'];
+    $password = $_POST['password'];
+
     if ($username == '' or $password == '') {
-        $err = "Silahan masukkan username dan password";
+        $err = "Silakan masukkan username dan password";
     }
+
     if (empty($err)) {
-        $sql1 =  "SELECT * FROM admin WHERE username = '$username'";
-        $q1 = mysqli_query($conn,$sql1);
-        $r1 = mysqli_fetch_array($q1);
-        if($r1['password'] != md5($password)){
-            $err = "Username atau Password salah";
+        $sql1 = "SELECT * FROM admin WHERE username = '$username'";
+        $q1 = mysqli_query($conn, $sql1);
+
+        if (!$q1) {
+            // Tangani kasus di mana kueri gagal
+            $err = "Error saat menjalankan kueri admin: " . mysqli_error($conn);
+        } else {
+            $r1 = mysqli_fetch_array($q1);
+
+            if (!$r1 || $r1['password'] != md5($password)) {
+                // Cek jika username tidak ditemukan atau password tidak sesuai
+                // Jika tidak ditemukan, lanjut ke pemeriksaan user
+                $sql2 =  "SELECT * FROM user WHERE nim = '$username'";
+                $q2 = mysqli_query($conn, $sql2);
+
+                if (!$q2) {
+                    // Tangani kasus di mana kueri gagal
+                    $err = "Error saat menjalankan kueri user: " . mysqli_error($conn);
+                } else {
+                    $r2 = mysqli_fetch_array($q2);
+
+                    if (!$r2 || $r2['password'] != md5($password)) {
+                        $err = "Username atau Password salah";
+                    }
+                }
+            } else {
+                $_SESSION['admin_username'] = $username;
+                header("location:dashboard_admin.php");
+                exit();
+            }
         }
     }
-    if(empty($err)) {
-        $_SESSION['admin_username'] = $username;
+
+    if (empty($err)) {
+        $_SESSION['user_username'] = $username;
         header("location:dashboard.php");
         exit();
     }
 }
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -46,7 +79,12 @@ if (isset($_POST['signin'])) {
     <link rel="icon" type="image/png" sizes="16x16" href="images/loker4.png">
 
     <!-- Main css -->
-    <link rel="stylesheet" href="static/style.css">
+    <link rel="stylesheet" href="css/style.css">
+    <script>
+        function showAlert(message) {
+            alert(message);
+        }
+    </script>
 </head>
 <body>
 
@@ -72,10 +110,10 @@ if (isset($_POST['signin'])) {
                                 <input type="password" name="password" id="password" placeholder="Password"/>
                             </div>
                             <?php
-                         if($err){
-                            echo "<ul>$err</ul>";
-                        }
-                        ?>
+                                if ($err) {
+                                    echo '<script>showAlert("' . $err . '");</script>';
+                                }
+                            ?>
                             <div class="form-group">
                                 <input type="checkbox" name="remember-me" id="remember-me" class="agree-term" />
                                 <label for="remember-me" class="label-agree-term"><span><span></span></span>Remember me</label>
@@ -91,8 +129,8 @@ if (isset($_POST['signin'])) {
 
     </div>
 
-    <!-- JS
+    <!-- JS -->
     <script src="vendor/jquery/jquery.min.js"></script>
-    <script src="js/main.js"></script> -->
+    <script src="js/main.js"></script>
 </body>
 </html>

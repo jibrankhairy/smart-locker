@@ -1,29 +1,41 @@
 <?php
 include("conn.php");
 
+// Variabel untuk menyimpan pesan kesalahan
+$error_message = '';
+
 // Memeriksa jika form disubmit
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['signup'])) {
     $username = $_POST['name'];
     $nim = $_POST['nim'];
     $email = $_POST['email'];
     $password = $_POST['password'];
+    $rePassword = $_POST['re-password'];
 
-    // Enkripsi kata sandi menggunakan MD5 (tidak disarankan)
-    $hashedPassword = md5($password);
+    // Validasi input
+    if (empty($username) || empty($nim) || empty($email) || empty($password) || empty($rePassword)) {
+        $error_message = "Semua kolom harus diisi!";
+    } elseif ($password !== $rePassword) {
+        $error_message = "Password dan konfirmasi password harus sama!";
+    }
 
-    // Query untuk menyimpan data ke dalam tabel 'user'
-    $sql = "INSERT INTO user (nama, nim, email, password) VALUES ('$username', '$nim', '$email', '$hashedPassword')";
+    // Jika tidak ada kesalahan, lanjutkan dengan pendaftaran
+    if (empty($error_message)) {
+        // Enkripsi kata sandi menggunakan MD5 (tidak disarankan)
+        $hashedPassword = md5($password);
 
-    if ($conn->query($sql) === TRUE) {
-        echo "Registrasi berhasil!";
-    } else {
-        echo "Error: " . $sql . "<br>" . $conn->error;
+        // Query untuk menyimpan data ke dalam tabel 'user'
+        $sql = "INSERT INTO user (nama, nim, email, password) VALUES ('$username', '$nim', '$email', '$hashedPassword')";
+
+        if ($conn->query($sql) === TRUE) {
+            // Registrasi berhasil, mengatur pesan sukses untuk ditampilkan di JavaScript
+            $success_message = "Registrasi berhasil!";
+        } else {
+            $error_message = "Error: " . $sql . "<br>" . $conn->error;
+        }
     }
 }
 ?>
-
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -38,8 +50,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['signup'])) {
     <!-- Icon web -->
     <link rel="icon" type="image/png" sizes="16x16" href="images/loker4.png">
 
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10">
+
     <!-- Main css -->
-    <link rel="stylesheet" href="static/style.css">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/main.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
 </head>
 <body>
     <div class="main">
@@ -69,7 +86,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['signup'])) {
                             </div>
                             <div class="form-group">
                                 <label for="re-pass"><i class="zmdi zmdi-lock-outline"></i></label>
-                                <input type="password" name="password" id="password" placeholder="Repeat your password"/>
+                                <input type="password" name="re-password" id="re-pass" placeholder="Repeat your password"/>
                             </div>
                             <div class="form-group form-button">
                                 <input type="submit" name="signup" id="signup" class="form-submit" value="Register"/>
@@ -85,10 +102,37 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['signup'])) {
         </section>
 </div>
 
+<script>
+// Menangkap sinyal dari PHP untuk menampilkan pop-up
+window.onload = function() {
+    var errorMessage = "<?php echo isset($error_message) ? $error_message : ''; ?>";
+    if (errorMessage !== "") {
+        // Menggunakan SweetAlert2 untuk menampilkan pop-up error
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: errorMessage,
+        });
+    }
+
+    var successMessage = "<?php echo isset($success_message) ? $success_message : ''; ?>";
+    if (successMessage !== "") {
+        // Menggunakan SweetAlert2 untuk menampilkan pop-up sukses
+        Swal.fire({
+            icon: 'success',
+            title: 'Registrasi Berhasil!',
+            text: successMessage,
+        });
+    }
+}
+</script>
+
 <!-- JS -->
 <!-- <script src="vendor/jquery/jquery.min.js"></script>
 <script src="js/main.js"></script>
 </body>This templates was made by Colorlib (https://colorlib.com) -->
+
+</body>
 </html>
 
 <?php

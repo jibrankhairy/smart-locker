@@ -589,4 +589,70 @@ label.valid {
     margin-right: 0px;
     margin-bottom: 10px; } }
 
+ @media only screen and (max-width: 768px) {
+  .signin-image img {
+    display: none;
+      }
+  }
+
+  @media screen and (max-width: 1200px) {
+  .container {
+    width: calc(100% - 30px);
+    max-width: 100%;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .signup-content,
+  .signin-content {
+      flex-direction: column;
+      justify-content: center;
+  }
+
+  .signup-form,
+  .signup-image,
+  .signin-form,
+  .signin-image {
+      width: auto;
+  }
+
+  .social-login {
+      justify-content: center;
+  }
+
+  .form-button {
+      text-align: center;
+  }
+
+  .signin-form,
+  .signup-form {
+      margin: 0;
+      padding: 0 30px;
+  }
+
+  .signin-image img,
+  .signup-image img {
+      display: none;
+  }
+}
+.signup-image img {
+  /* Properti gambar yang umum */
+}
+
+.signup-form {
+  /* Properti formulir yang umum */
+}
+
+.signup-image-link {
+  display: block; /* Menampilkan tautan "I am already have account" secara default */
+  text-align: center;
+  margin-top: 20px; /* Sesuaikan dengan margin yang diinginkan */
+}
+
+/* Media queries untuk perangkat dengan lebar layar kurang dari 768px (contoh untuk perangkat mobile) */
+@media screen and (max-width: 768px) {
+  .signup-image img {
+      display: none; /* Menyembunyikan gambar pada perangkat mobile */
+  }
+}
 /*# sourceMappingURL=style.css.map */
