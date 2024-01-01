@@ -2,7 +2,7 @@
 include("conn.php");
 session_start();
 if (isset($_SESSION['admin_username'])) {
-    header("location:dashboard.php");
+    header("location:dashboard_admin.php");
     exit();
 } elseif (isset($_SESSION['user_username'])) {
     header("location:dashboard.php");
