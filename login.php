@@ -20,26 +20,20 @@ if (isset($_POST['signin'])) {
 
     if ($username == '' or $password == '') {
         $err = "Silakan masukkan username dan password";
-    }
-
-    if (empty($err)) {
+    } else {
         $sql1 = "SELECT * FROM admin WHERE username = '$username'";
         $q1 = mysqli_query($conn, $sql1);
 
         if (!$q1) {
-            // Tangani kasus di mana kueri gagal
             $err = "Error saat menjalankan kueri admin: " . mysqli_error($conn);
         } else {
             $r1 = mysqli_fetch_array($q1);
 
             if (!$r1 || $r1['password'] != md5($password)) {
-                // Cek jika username tidak ditemukan atau password tidak sesuai
-                // Jika tidak ditemukan, lanjut ke pemeriksaan user
                 $sql2 =  "SELECT * FROM user WHERE nim = '$username'";
                 $q2 = mysqli_query($conn, $sql2);
 
                 if (!$q2) {
-                    // Tangani kasus di mana kueri gagal
                     $err = "Error saat menjalankan kueri user: " . mysqli_error($conn);
                 } else {
                     $r2 = mysqli_fetch_array($q2);
@@ -54,16 +48,15 @@ if (isset($_POST['signin'])) {
                 exit();
             }
         }
-    }
 
-    if (empty($err)) {
-        $_SESSION['user_username'] = $username;
-        header("location:dashboard.php");
-        exit();
+        if (empty($err)) {
+            $_SESSION['user_username'] = $username;
+            header("location:dashboard.php");
+            exit();
+        }
     }
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -80,16 +73,34 @@ if (isset($_POST['signin'])) {
 
     <!-- Main css -->
     <link rel="stylesheet" href="css/style.css">
+    
+    <!-- SweetAlert2 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.css">
+
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
     <script>
-        function showAlert(message) {
-            alert(message);
+        // Function untuk menampilkan pesan SweetAlert2 sebagai pop-up
+        function showAlert(title, text) {
+            Swal.fire({
+                icon: 'warning',
+                title: title,
+                text: text
+            });
+        }
+
+        function showError(title, text) {
+            Swal.fire({
+                icon: 'error',
+                title: title,
+                text: text
+            });
         }
     </script>
 </head>
 <body>
-
     <div class="main">
-        
         <section class="sign-in">
             <div class="container">
                 <div class="signin-content">
@@ -100,33 +111,32 @@ if (isset($_POST['signin'])) {
 
                     <div class="signin-form">
                         <h2 class="form-title">Sign in</h2>
+                        <?php
+                        if ($err) {
+                            echo '<script>showError("Error", "' . $err . '");</script>';
+                        }
+                        ?>
                         <form method="POST" class="register-form">
                             <div class="form-group">
                                 <label for="your_username"><i class="zmdi zmdi-account material-icons-name"></i></label>
-                                <input type="text" name="username" id="username" placeholder="Username"/>
+                                <input type="text" name="username" id="username" placeholder="Username" />
                             </div>
                             <div class="form-group">
                                 <label for="your_pass"><i class="zmdi zmdi-lock"></i></label>
-                                <input type="password" name="password" id="password" placeholder="Password"/>
+                                <input type="password" name="password" id="password" placeholder="Password" />
                             </div>
-                            <?php
-                                if ($err) {
-                                    echo '<script>showAlert("' . $err . '");</script>';
-                                }
-                            ?>
                             <div class="form-group">
                                 <input type="checkbox" name="remember-me" id="remember-me" class="agree-term" />
                                 <label for="remember-me" class="label-agree-term"><span><span></span></span>Remember me</label>
                             </div>
                             <div class="form-group form-button">
-                                <input type="submit" name="signin" id="signin" class="form-submit" value="Log in"/>
+                                <input type="submit" name="signin" id="signin" class="form-submit" value="Log in" />
                             </div>
                         </form>
                     </div>
                 </div>
             </div>
         </section>
-
     </div>
 
     <!-- JS -->

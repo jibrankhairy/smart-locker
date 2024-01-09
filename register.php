@@ -46,17 +46,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['signup'])) {
 
     <!-- Font Icon -->
     <link rel="stylesheet" href="fonts/material-icon/css/material-design-iconic-font.min.css">
-    
+
     <!-- Icon web -->
     <link rel="icon" type="image/png" sizes="16x16" href="images/loker4.png">
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10">
-
+    
     <!-- Main css -->
     <link rel="stylesheet" href="css/style.css">
-    <script src="js/main.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
-
 </head>
 <body>
     <div class="main">
@@ -91,6 +88,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['signup'])) {
                             <div class="form-group form-button">
                                 <input type="submit" name="signup" id="signup" class="form-submit" value="Register"/>
                             </div>
+                            <!-- <div class="error-message"><?php echo $error_message; ?></div> -->
                         </form>
                     </div>
                     <div class="signup-image">
@@ -100,38 +98,43 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['signup'])) {
                 </div>
             </div>
         </section>
-</div>
+    </div>
 
-<script>
-// Menangkap sinyal dari PHP untuk menampilkan pop-up
-window.onload = function() {
-    var errorMessage = "<?php echo isset($error_message) ? $error_message : ''; ?>";
-    if (errorMessage !== "") {
-        // Menggunakan SweetAlert2 untuk menampilkan pop-up error
-        Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: errorMessage,
-        });
-    }
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <script>
+        // Menangkap sinyal dari PHP untuk menampilkan pop-up
+        window.onload = function () {
+            var errorMessage = "<?php echo isset($error_message) ? $error_message : ''; ?>";
+            var successMessage = "<?php echo isset($success_message) ? $success_message : ''; ?>";
 
-    var successMessage = "<?php echo isset($success_message) ? $success_message : ''; ?>";
-    if (successMessage !== "") {
-        // Menggunakan SweetAlert2 untuk menampilkan pop-up sukses
-        Swal.fire({
-            icon: 'success',
-            title: 'Registrasi Berhasil!',
-            text: successMessage,
-        });
-    }
-}
-</script>
+            if (errorMessage !== "") {
+                // Menampilkan pesan error atau semua kolom harus diisi dengan style yang sama seperti pop-up registrasi berhasil
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: errorMessage,
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: 'OK'
+                });
+            }
 
-<!-- JS -->
-<!-- <script src="vendor/jquery/jquery.min.js"></script>
-<script src="js/main.js"></script>
-</body>This templates was made by Colorlib (https://colorlib.com) -->
-
+            if (successMessage !== "") {
+                // Menampilkan pop-up sukses jika registrasi berhasil
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Registrasi Berhasil!',
+                    text: successMessage,
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: 'OK'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Redirect ke halaman login jika OK diklik
+                        window.location.href = "login.php";
+                    }
+                });
+            }
+        }
+    </script>
 </body>
 </html>
 

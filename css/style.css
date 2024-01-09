@@ -655,4 +655,47 @@ label.valid {
       display: none; /* Menyembunyikan gambar pada perangkat mobile */
   }
 }
+
+ /* Gaya tambahan untuk SweetAlert2 */
+ .swal2-popup {
+  font-size: 1.6rem;
+}
+.swal2-title {
+  font-size: 1.5rem !important;
+  color: #333 !important; /* Warna judul */
+}
+
+.swal2-content {
+  font-size: 1.2rem !important;
+  color: #555 !important; /* Warna konten */
+}
+
+.swal2-icon {
+  font-size: 2rem !important;
+}
+
+/* Gaya untuk pesan error "Semua kolom harus diisi!" */
+.error-message {
+  color: #ff0000; /* Warna merah untuk pesan error */
+  font-size: 1rem;
+  margin-top: 5px;
+}
+.my-custom-popup {
+  font-size: 1rem !important;
+}
+
+.my-custom-title {
+  font-size: 1.5rem !important;
+  color: #333 !important; /* Warna judul */
+}
+
+.my-custom-content {
+  font-size: 1.2rem !important;
+  color: #555 !important; /* Warna konten */
+}
+
+.my-custom-button {
+  /* Gaya tombol konfirmasi jika diperlukan */
+}
+
 /*# sourceMappingURL=style.css.map */
