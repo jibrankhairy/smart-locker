@@ -21,7 +21,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['signup'])) {
 
     // Jika tidak ada kesalahan, lanjutkan dengan pendaftaran
     if (empty($error_message)) {
-        // Enkripsi kata sandi menggunakan MD5 (tidak disarankan)
+        // Enkripsi kata sandi menggunakan MD5
         $hashedPassword = md5($password);
 
         // Query untuk menyimpan data ke dalam tabel 'user'
