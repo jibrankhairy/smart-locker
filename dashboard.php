@@ -57,11 +57,11 @@ if ($result && mysqli_num_rows($result) > 0) {
                      </div>
                     <hr>
                     <a href="profile_user.php" class="sub-menu-link">
-                        <img src="images/profile.png">
+                        <img src="images/user.png">
                         <p>Profile</p>
                     </a>
                     <a href="logout.php" class="sub-menu-link">
-                        <img src="images/logout.png">
+                        <img src="images/logout1.png">
                         <p>Logout</p>
                     </a>
                 </div>
@@ -143,7 +143,7 @@ if ($result && mysqli_num_rows($result) > 0) {
 
     document.getElementById("kodeAButton").addEventListener("click", function () {
     // Fetch request ke server untuk menjalankan kode A
-    fetch("http://192.168.64.108/eksekusi-kode-A")
+    fetch("http://192.168.1.99/eksekusi-kode-A")
         .then(response => {
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
@@ -176,7 +176,7 @@ if ($result && mysqli_num_rows($result) > 0) {
 
 document.getElementById("kodeBButton").addEventListener("click", function () {
     // Fetch request ke server untuk menjalankan kode B (mengembalikan ke status awal)
-    fetch("http://192.168.64.108/eksekusi-kode-B")
+    fetch("http://192.168.1.99/eksekusi-kode-B")
         .then(response => {
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);

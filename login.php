@@ -126,8 +126,8 @@ if (isset($_POST['signin'])) {
                                 <input type="password" name="password" id="password" placeholder="Password" />
                             </div>
                             <div class="form-group">
-                                <input type="checkbox" name="remember-me" id="remember-me" class="agree-term" />
-                                <label for="remember-me" class="label-agree-term"><span><span></span></span>Remember me</label>
+                                <input type="checkbox" name="show-password" id="show-password" class="agree-term" />
+                                <label for="show-password" class="label-agree-term"><span><span></span></span>Show Password</label>
                             </div>
                             <div class="form-group form-button">
                                 <input type="submit" name="signin" id="signin" class="form-submit" value="Log in" />
@@ -142,5 +142,21 @@ if (isset($_POST['signin'])) {
     <!-- JS -->
     <script src="vendor/jquery/jquery.min.js"></script>
     <script src="js/main.js"></script>
+    <script>
+    $(document).ready(function() {
+        // Function to toggle password visibility
+        $('#show-password').change(function() {
+            var passwordInput = $('#password');
+            var passwordFieldType = passwordInput.attr('type');
+
+            // Toggle password field type between password and text
+            if (passwordFieldType === 'password') {
+                passwordInput.attr('type', 'text');
+            } else {
+                passwordInput.attr('type', 'password');
+            }
+        });
+    });
+</script>
 </body>
 </html>

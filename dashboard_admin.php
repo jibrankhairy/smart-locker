@@ -77,7 +77,7 @@ $result = mysqli_query($conn, $query);
                     </a> -->
 
                     <a href="logout.php" class="sub-menu-link">
-                        <img src="images/logout.png">
+                        <img src="images/logout1.png">
                         <p>Logout</p>  
                     </a>
                 </div>
