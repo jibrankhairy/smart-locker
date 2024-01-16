@@ -9,11 +9,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['signup'])) {
     $username = $_POST['name'];
     $nim = $_POST['nim'];
     $email = $_POST['email'];
+    $no_hp = $_POST['no_hp'];
     $password = $_POST['password'];
     $rePassword = $_POST['re-password'];
 
     // Validasi input
-    if (empty($username) || empty($nim) || empty($email) || empty($password) || empty($rePassword)) {
+    if (empty($username) || empty($nim) || empty($email) ||  empty($no_hp) || empty($password) || empty($rePassword)) {
         $error_message = "Semua kolom harus diisi!";
     } elseif ($password !== $rePassword) {
         $error_message = "Password dan konfirmasi password harus sama!";
@@ -25,7 +26,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['signup'])) {
         $hashedPassword = md5($password);
 
         // Query untuk menyimpan data ke dalam tabel 'user'
-        $sql = "INSERT INTO user (nama, nim, email, password) VALUES ('$username', '$nim', '$email', '$hashedPassword')";
+        $sql = "INSERT INTO user (nama, nim, email, no_hp, password) VALUES ('$username', '$nim', '$email', '$no_hp' , '$hashedPassword')";
 
         if ($conn->query($sql) === TRUE) {
             // Registrasi berhasil, mengatur pesan sukses untuk ditampilkan di JavaScript
@@ -76,6 +77,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['signup'])) {
                             <div class="form-group">
                                 <label for="email"><i class="zmdi zmdi-email"></i></label>
                                 <input type="email" name="email" id="email" placeholder="Email"/>
+                            </div>
+                            <div class="form-group">
+                                <label for="no_hp"><i class="zmdi zmdi-phone"></i></label>
+                                <input type="text" name="no_hp" id="no_hp" placeholder="No HP"/>
                             </div>
                             <div class="form-group">
                                 <label for="pass"><i class="zmdi zmdi-lock"></i></label>

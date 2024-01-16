@@ -31,8 +31,8 @@ class ProfilPengguna {
         }
     }
 
-    public function perbaruiDataPengguna($newNama, $newEmail) {
-        $queryPerbarui = "UPDATE user SET nama = '{$newNama}', email = '{$newEmail}' WHERE nim = '{$this->username}'";
+    public function perbaruiDataPengguna($newNama, $newEmail, $newNohp) {
+        $queryPerbarui = "UPDATE user SET nama = '{$newNama}', email = '{$newEmail}', no_hp = '{$newNohp}' WHERE nim = '{$this->username}'";
 
         if (mysqli_query($this->conn, $queryPerbarui)) {
             $this->redirectDenganPesanSukses();
@@ -59,8 +59,9 @@ $profilPengguna = new ProfilPengguna($conn);
 if (isset($_POST['update'])) {
     $newNama = $_POST['new_nama'];
     $newEmail = $_POST['new_email'];
+    $newNohp = $_POST['new_no_hp'];
 
-    $message = $profilPengguna->perbaruiDataPengguna($newNama, $newEmail);
+    $message = $profilPengguna->perbaruiDataPengguna($newNama, $newEmail, $newNohp);
 }
 
 ?>
@@ -133,6 +134,12 @@ if (isset($_POST['update'])) {
                     <td class="whitespace-nowrap font-medium">Email</td>
                     <td>
                         <input type="email" name="new_email" class="form-control">
+                    </td>
+                </tr>
+                <tr>
+                    <td class="whitespace-nowrap font-medium">No HP</td>
+                    <td>
+                        <input type="no_hp" name="new_no_hp" class="form-control">
                     </td>
                 </tr>
             </tbody>

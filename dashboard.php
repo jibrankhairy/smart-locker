@@ -14,12 +14,16 @@ $query = "SELECT nama FROM user WHERE nim = '$username'";
 $result = mysqli_query($conn, $query);
 
 if ($result && mysqli_num_rows($result) > 0) {
-  $row = mysqli_fetch_assoc($result);
-  $nama_pengguna = $row['nama'];
-} else {
-  // Handle jika data nama tidak ditemukan
-  $nama_pengguna = "Pengguna"; // Default
-}
+    $row = mysqli_fetch_assoc($result);
+    $nama_pengguna = $row['nama'];
+    // Set session storage di sini
+    echo '<script>sessionStorage.setItem("lockerStatus", "aktif");</script>';
+  } else {
+    // Handle jika data nama tidak ditemukan
+    $nama_pengguna = "Pengguna"; // Default
+    // Set session storage di sini
+    echo '<script>sessionStorage.setItem("lockerStatus", "nonaktif");</script>';
+  }
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -122,16 +126,16 @@ if ($result && mysqli_num_rows($result) > 0) {
         </div>
     </div>
 
-    <script>
+    <!-- ... (kode HTML lainnya) ... -->
+<script>
     var dt = new Date();
     var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
     var locale = 'id-ID'; 
     var tanggalwaktuElements = document.getElementsByClassName("tanggalwaktu");
 
     for (var i = 0; i < tanggalwaktuElements.length; i++) {
-    tanggalwaktuElements[i].innerHTML = dt.toLocaleDateString(locale, options);
-}
-
+        tanggalwaktuElements[i].innerHTML = dt.toLocaleDateString(locale, options);
+    }
 
     var statusSwitch = document.getElementById("statusSwitch");
     var subMenuVisible = false;
@@ -139,11 +143,116 @@ if ($result && mysqli_num_rows($result) > 0) {
     statusSwitch.addEventListener("change", function () {
         var slider = document.querySelector(".slider");
         slider.style.backgroundColor = this.checked ? "#4CAF50" : "#ccc";
+
+        // Simpan status di session storage
+        sessionStorage.setItem("lockerStatus", this.checked ? "aktif" : "nonaktif");
     });
 
+    document.addEventListener("DOMContentLoaded", function () {
+    // Periksa session storage untuk mendapatkan status sebelumnya
+    var storedStatus = sessionStorage.getItem("lockerStatus");
+
+    if (storedStatus === "aktif") {
+        // Atur toggle switch menjadi aktif
+        statusSwitch.checked = true;
+        var slider = document.querySelector(".slider");
+        slider.style.backgroundColor = "#4CAF50";
+
+        // Nonaktifkan switch jika diperlukan
+        // statusSwitch.disabled = true;
+    } else {
+        // Atur toggle switch menjadi nonaktif
+        statusSwitch.checked = false;
+        var slider = document.querySelector(".slider");
+        slider.style.backgroundColor = "#ccc";
+
+        // Aktifkan switch jika diperlukan
+        // statusSwitch.disabled = false;
+    }
+});
     document.getElementById("kodeAButton").addEventListener("click", function () {
-    // Fetch request ke server untuk menjalankan kode A
-    fetch("http://192.168.1.99/eksekusi-kode-A")
+        // Fetch request ke server untuk menjalankan kode A
+        fetch("http://192.168.1.99/eksekusi-kode-A", { method: 'GET' })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log("Kode A berhasil dijalankan:", data);
+
+                // Set toggle switch ke aktif setelah berhasil melakukan registrasi
+                statusSwitch.checked = true;
+                var slider = document.querySelector(".slider");
+                slider.style.backgroundColor = "#4CAF50";
+
+                // Menonaktifkan toggle switch agar tidak bisa diklik
+                statusSwitch.disabled = true;
+
+                // Menonaktifkan button registrasi setelah dijalankan
+                document.getElementById("kodeAButton").disabled = true;
+
+                // Mengaktifkan kembali toggle switch setelah tombol Deactive diklik
+                document.getElementById("kodeBButton").disabled = false;
+
+                // Update status_locker pada database
+                updateStatusLocker('aktif');
+            })
+            .catch(error => {
+                console.error("Ada kesalahan:", error);
+
+                // Handle kegagalan registrasi di sini
+            });
+    });
+
+    document.getElementById("kodeBButton").addEventListener("click", function () {
+        // Fetch request ke server untuk menjalankan kode B (mengembalikan ke status awal)
+        fetch("http://192.168.1.99/eksekusi-kode-B", { method: 'GET' })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log("Kode B berhasil dijalankan:", data);
+
+                // Set toggle switch ke tidak aktif setelah berhasil melakukan deaktivasi
+                statusSwitch.checked = false;
+                var slider = document.querySelector(".slider");
+                slider.style.backgroundColor = "#ccc";
+
+                // Mengaktifkan kembali toggle switch
+                statusSwitch.disabled = false;
+
+                // Menonaktifkan button Deactive setelah dijalankan
+                document.getElementById("kodeBButton").disabled = true;
+
+                // Mengaktifkan kembali button Registrasi setelah tombol Deactive diklik
+                document.getElementById("kodeAButton").disabled = false;
+
+                // Update status_locker pada database
+                updateStatusLocker('nonaktif');
+            })
+            .catch(error => {
+                console.error("Ada kesalahan:", error);
+
+                // Handle kegagalan deaktivasi di sini
+            });
+    });
+
+    function updateStatusLocker(status) {
+        // Fetch request untuk mengupdate status_locker pada database
+        fetch("update_status_locker.php", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                status: status,
+            }),
+        })
         .then(response => {
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
@@ -151,61 +260,12 @@ if ($result && mysqli_num_rows($result) > 0) {
             return response.json();
         })
         .then(data => {
-            console.log("Kode A berhasil dijalankan:", data);
-
-            // Set toggle switch ke aktif setelah berhasil melakukan registrasi
-            statusSwitch.checked = true;
-            var slider = document.querySelector(".slider");
-            slider.style.backgroundColor = "#4CAF50";
-
-            // Menonaktifkan toggle switch agar tidak bisa diklik
-            statusSwitch.disabled = true;
-
-            // Menonaktifkan button registrasi setelah dijalankan
-            document.getElementById("kodeAButton").disabled = true;
-
-            // Mengaktifkan kembali toggle switch setelah tombol Deactive diklik
-            document.getElementById("kodeBButton").disabled = false;
+            console.log("Status locker berhasil diupdate:", data);
         })
         .catch(error => {
             console.error("Ada kesalahan:", error);
-
-            // Handle kegagalan registrasi di sini
         });
-});
-
-document.getElementById("kodeBButton").addEventListener("click", function () {
-    // Fetch request ke server untuk menjalankan kode B (mengembalikan ke status awal)
-    fetch("http://192.168.1.99/eksekusi-kode-B")
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.log("Kode B berhasil dijalankan:", data);
-
-            // Set toggle switch ke tidak aktif setelah berhasil melakukan deaktivasi
-            statusSwitch.checked = false;
-            var slider = document.querySelector(".slider");
-            slider.style.backgroundColor = "#ccc";
-
-            // Mengaktifkan kembali toggle switch
-            statusSwitch.disabled = false;
-
-            // Menonaktifkan button Deactive setelah dijalankan
-            document.getElementById("kodeBButton").disabled = true;
-
-            // Mengaktifkan kembali button Registrasi setelah tombol Deactive diklik
-            document.getElementById("kodeAButton").disabled = false;
-        })
-        .catch(error => {
-            console.error("Ada kesalahan:", error);
-
-            // Handle kegagalan deaktivasi di sini
-        });
-});
+    }
 
     document.addEventListener("DOMContentLoaded", function () {
         var userProfile = document.querySelector(".user-profile");

@@ -21,7 +21,7 @@ $nama_pengguna = $row['nama'];
 $nama_pengguna = "Pengguna"; // Default
 }
 // Query untuk mengambil data user dari tabel "user" beserta tanggal pembuatan (tgl_buat)
-$query = "SELECT id, nama, nim, email FROM user WHERE nim = '$username'";
+$query = "SELECT id, nama, nim, email, no_hp FROM user WHERE nim = '$username'";
 $result = mysqli_query($conn, $query);
 ?>
 
@@ -106,6 +106,10 @@ $result = mysqli_query($conn, $query);
                     echo "<tr>";
                     echo '<td class="whitespace-nowrap font-medium w-1/4">Email:</td>';
                     echo "<td>" . $row['email'] . "</td>";
+                    echo "</tr>";
+                    echo "<tr>";
+                    echo '<td class="whitespace-nowrap font-medium w-1/4">No HP:</td>';
+                    echo "<td>" . $row['no_hp'] . "</td>";
                     echo "</tr>";
                     echo "</tbody>";
                     echo "</table>";
