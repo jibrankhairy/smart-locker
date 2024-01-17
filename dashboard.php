@@ -167,7 +167,7 @@ if ($result && mysqli_num_rows($result) > 0) {
 });
     document.getElementById("kodeAButton").addEventListener("click", function () {
         // Fetch request ke server untuk menjalankan kode A
-        fetch("http://192.168.1.99/eksekusi-kode-A", { method: 'GET' })
+        fetch("http://192.168.1.7/eksekusi-kode-A", { method: 'GET' })
             .then(response => {
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
@@ -206,7 +206,7 @@ if ($result && mysqli_num_rows($result) > 0) {
 
     document.getElementById("kodeBButton").addEventListener("click", function () {
         // Fetch request ke server untuk menjalankan kode B (mengembalikan ke status awal)
-        fetch("http://192.168.1.99/eksekusi-kode-B", { method: 'GET' })
+        fetch("http://192.168.1.7/eksekusi-kode-B", { method: 'GET' })
             .then(response => {
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);

@@ -3,7 +3,7 @@ session_start();
 include("conn.php");
 
 if (!isset($_SESSION['admin_username'])) {
-  // Jika tidak ada sesi user_username, alihkan ke halaman login
+  // Jika tidak ada sesi admin_username, alihkan ke halaman login
   header("location: login.php");
   exit();
 }
@@ -31,11 +31,11 @@ if (isset($_POST['delete'])) {
     }
 }
 
-// Query untuk mengambil data user dari tabel "user" beserta tanggal pembuatan (tgl_buat)
-$query = "SELECT id, nama, nim, email, no_hp, tgl_buat_akun FROM user";
+// Query untuk mengambil data user dari tabel "user" sesuai dengan kondisi status locker
+$query = "SELECT id, nama, no_hp, email, status_locker FROM user WHERE status_locker = 'aktif'";
 $result = mysqli_query($conn, $query);
-
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -71,9 +71,9 @@ $result = mysqli_query($conn, $query);
                     </div>
                     <hr>
                     
-                    <a href="info_locker.php" class="sub-menu-link">
-                        <img src="images/lock.png">
-                        <p>Info Locker</p>  
+                    <a href="dashboard_admin.php" class="sub-menu-link">
+                        <img src="images/menu.png">
+                        <p>Profile</p>  
                     </a>
 
                     <a href="logout.php" class="sub-menu-link">
@@ -86,39 +86,29 @@ $result = mysqli_query($conn, $query);
     </nav>
 
     <div class="tabular--wrapper">
-        <h3 class="main-title">Data Pengguna</h3>
+        <h3 class="main-title">Info Locker</h3>
         <div class="table-container">
             <table>
                 <thead>
                     <tr>
                         <th>ID</th>
                         <th>Nama</th>
-                        <th>Nim</th>
-                        <th>Email</th>
                         <th>No HP</th>
-                        <th>Tanggal Buat Akun</th>
-                        <th>Aksi</th>
+                        <th>Email</th>
+                        <th>Status Locker</th>
                     </tr>
-                    <tbody>
+                </thead>
+                <tbody>
                     <?php
                     while ($row = mysqli_fetch_assoc($result)) {
                         echo "<tr>";
                         echo "<td>" . $row['id'] . "</td>";
                         echo "<td>" . $row['nama'] . "</td>";
-                        echo "<td>" . $row['nim'] . "</td>";
-                        echo "<td>" . $row['email'] . "</td>";
                         echo "<td>" . $row['no_hp'] . "</td>";
-                        echo "<td>" . $row['tgl_buat_akun'] . "</td>";
-                        echo "<td>
-                        <div class='btn-group btn-group-horizontal'>
-                          <form method='post' onsubmit='return confirmDelete()' style='display: inline;'>
-                            <input type='hidden' name='user_id' value='" . $row['id'] . "'>
-                            <button type='submit' class='btn' style='background-color: #dc3545 !important; color: #fff !important;' name='delete'>Delete</button>
-                          </form>
-                        </div>
-                      </td>";
-}
-?>
+                        echo "<td>" . $row['email'] . "</td>";
+                        echo "<td>" . $row['status_locker'] . "</td>";
+                        }
+                    ?>
                     </tbody>
                 </thead>
             </table>
