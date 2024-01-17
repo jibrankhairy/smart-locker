@@ -3,27 +3,28 @@ session_start();
 include("conn.php");
 
 if (!isset($_SESSION['user_username'])) {
-  // Jika tidak ada sesi user_username, alihkan ke halaman login
   header("location: login.php");
   exit();
 }
 
-// Lanjutkan dengan pengambilan nama pengguna dari database
+// Lanjutkan dengan pengambilan nama pengguna dan status loker dari database
 $username = $_SESSION['user_username'];
-$query = "SELECT nama FROM user WHERE nim = '$username'";
+$query = "SELECT nama, status_locker FROM user WHERE nim = '$username'";
 $result = mysqli_query($conn, $query);
 
 if ($result && mysqli_num_rows($result) > 0) {
     $row = mysqli_fetch_assoc($result);
     $nama_pengguna = $row['nama'];
-    // Set session storage di sini
-    echo '<script>sessionStorage.setItem("lockerStatus", "aktif");</script>';
-  } else {
-    // Handle jika data nama tidak ditemukan
+    
+    // Set session storage based on locker status
+    $status_locker = $row['status_locker'];
+    echo '<script>sessionStorage.setItem("lockerStatus", "' .$status_locker . '");</script>';
+} else {
     $nama_pengguna = "Pengguna"; // Default
-    // Set session storage di sini
+    
+    // Set session storage to nonaktif if user not found
     echo '<script>sessionStorage.setItem("lockerStatus", "nonaktif");</script>';
-  }
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -157,17 +158,11 @@ if ($result && mysqli_num_rows($result) > 0) {
         statusSwitch.checked = true;
         var slider = document.querySelector(".slider");
         slider.style.backgroundColor = "#4CAF50";
-
-        // Nonaktifkan switch jika diperlukan
-        // statusSwitch.disabled = true;
     } else {
         // Atur toggle switch menjadi nonaktif
         statusSwitch.checked = false;
         var slider = document.querySelector(".slider");
         slider.style.backgroundColor = "#ccc";
-
-        // Aktifkan switch jika diperlukan
-        // statusSwitch.disabled = false;
     }
 });
     document.getElementById("kodeAButton").addEventListener("click", function () {
@@ -186,6 +181,9 @@ if ($result && mysqli_num_rows($result) > 0) {
                 statusSwitch.checked = true;
                 var slider = document.querySelector(".slider");
                 slider.style.backgroundColor = "#4CAF50";
+
+                // Simpan status di session storage
+                sessionStorage.setItem("lockerStatus", "aktif");
 
                 // Menonaktifkan toggle switch agar tidak bisa diklik
                 statusSwitch.disabled = true;
