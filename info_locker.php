@@ -73,7 +73,7 @@ $result = mysqli_query($conn, $query);
                     
                     <a href="dashboard_admin.php" class="sub-menu-link">
                         <img src="images/menu.png">
-                        <p>Profile</p>  
+                        <p>Dashboard</p>  
                     </a>
 
                     <a href="logout.php" class="sub-menu-link">

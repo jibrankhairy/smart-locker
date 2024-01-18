@@ -52,6 +52,9 @@ $result = mysqli_query($conn, $query);
      <link rel="icon" type="image/png" sizes="16x16" href="images/loker4.png">
 
      <link rel="stylesheet" href="css/styles.css">
+
+     <link rel="stylesheet" href="path/to/sweetalert2.min.css">
+     <script src="path/to/sweetalert2.all.min.js"></script>
 </head>
 <body>
     <nav>
@@ -126,7 +129,11 @@ $result = mysqli_query($conn, $query);
     </div>
 
     <script>
-document.addEventListener("DOMContentLoaded", function () {
+    function confirmDelete() {
+        return confirm("Apakah Anda yakin ingin menghapus pengguna ini?");
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
         var userProfile = document.querySelector(".user-profile");
         var subMenu = document.querySelector(".sub-menu");
 
@@ -140,7 +147,7 @@ document.addEventListener("DOMContentLoaded", function () {
             subMenu.classList.remove("show"); // Menghapus class "show" jika user mengklik di luar user profile
         }
     });
-        }); 
+        });
     </script>
 </body>
 </html>
