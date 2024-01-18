@@ -3,8 +3,8 @@ session_start();
 include("conn.php");
 
 if (!isset($_SESSION['user_username'])) {
-  header("location: login.php");
-  exit();
+    header("location: login.php");
+    exit();
 }
 
 // Lanjutkan dengan pengambilan nama pengguna dan status loker dari database
@@ -25,7 +25,13 @@ if ($result && mysqli_num_rows($result) > 0) {
     // Set session storage to nonaktif if user not found
     echo '<script>sessionStorage.setItem("lockerStatus", "nonaktif");</script>';
 }
+
+// Additional query to get all active lockers
+$queryActiveLockers = "SELECT status_locker FROM user WHERE status_locker = 'aktif'";
+$resultActiveLockers = mysqli_query($conn, $queryActiveLockers);
+$activeLockers = mysqli_num_rows($resultActiveLockers);
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -118,8 +124,6 @@ if ($result && mysqli_num_rows($result) > 0) {
                             <!-- Tombol untuk Registrasi Locker -->
                             <button class="kodeAButton">Registrasi</button>
                             <button class="kodeBButton">Deactive</button>
-                            <!-- Tombol untuk Aktivasi Locker -->
-                            <!-- <button onclick="aktivasiLocker()">Aktivasi</button> -->
                         </td>
                     </tr>
                 </tbody>
@@ -150,24 +154,22 @@ if ($result && mysqli_num_rows($result) > 0) {
     });
 
     document.addEventListener("DOMContentLoaded", function () {
-    // Periksa session storage untuk mendapatkan status sebelumnya
-    var storedStatus = sessionStorage.getItem("lockerStatus");
+        var statusSwitch = document.getElementById("statusSwitch");
 
-    if (storedStatus === "aktif") {
-        // Atur toggle switch menjadi aktif
-        statusSwitch.checked = true;
-        var slider = document.querySelector(".slider");
-        slider.style.backgroundColor = "#4CAF50";
-    } else {
-        // Atur toggle switch menjadi nonaktif
-        statusSwitch.checked = false;
-        var slider = document.querySelector(".slider");
-        slider.style.backgroundColor = "#ccc";
-    }
+        // Update toggle switch based on the number of active lockers
+        if (<?php echo $activeLockers; ?> > 0) {
+                statusSwitch.checked = true;
+                var slider = document.querySelector(".slider");
+                slider.style.backgroundColor = "#4CAF50";
+            } else {
+                statusSwitch.checked = false;
+                var slider = document.querySelector(".slider");
+                slider.style.backgroundColor = "#ccc";
+            }
 });
     document.getElementById("kodeAButton").addEventListener("click", function () {
         // Fetch request ke server untuk menjalankan kode A
-        fetch("http://192.168.1.7/eksekusi-kode-A", { method: 'GET' })
+        fetch("http://192.168.1.2/eksekusi-kode-A", { method: 'GET' })
             .then(response => {
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
@@ -206,7 +208,7 @@ if ($result && mysqli_num_rows($result) > 0) {
 
     document.getElementById("kodeBButton").addEventListener("click", function () {
         // Fetch request ke server untuk menjalankan kode B (mengembalikan ke status awal)
-        fetch("http://192.168.1.7/eksekusi-kode-B", { method: 'GET' })
+        fetch("http://192.168.1.2/eksekusi-kode-B", { method: 'GET' })
             .then(response => {
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
