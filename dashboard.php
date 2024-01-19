@@ -152,7 +152,7 @@ $activeLockers = mysqli_num_rows($resultActiveLockers);
         // Simpan status di session storage
         sessionStorage.setItem("lockerStatus", this.checked ? "aktif" : "nonaktif");
     });
-
+    var lockerAktifByUser = <?php echo json_encode($status_locker === 'aktif'); ?>;
     document.addEventListener("DOMContentLoaded", function () {
         var statusSwitch = document.getElementById("statusSwitch");
 
@@ -168,6 +168,11 @@ $activeLockers = mysqli_num_rows($resultActiveLockers);
             }
 });
     document.getElementById("kodeAButton").addEventListener("click", function () {
+        if (lockerAktifByUser || statusSwitch.checked) {
+        // Locker sudah aktif atau terisi, beri pesan atau tindakan lain yang sesuai
+        console.log("Anda tidak dapat mengaktifkan locker yang sudah aktif atau terisi.");
+        return;
+    }
         // Fetch request ke server untuk menjalankan kode A
         fetch("http://192.168.1.2/eksekusi-kode-A", { method: 'GET' })
             .then(response => {
@@ -208,6 +213,12 @@ $activeLockers = mysqli_num_rows($resultActiveLockers);
 
     document.getElementById("kodeBButton").addEventListener("click", function () {
         // Fetch request ke server untuk menjalankan kode B (mengembalikan ke status awal)
+        if (!lockerAktifByUser || !statusSwitch.checked) {
+        // Locker tidak aktif atau belum terisi, beri pesan atau tindakan lain yang sesuai
+        console.log("Anda tidak dapat menonaktifkan locker yang tidak aktif atau belum terisi.");
+        return;
+    }
+
         fetch("http://192.168.1.2/eksekusi-kode-B", { method: 'GET' })
             .then(response => {
                 if (!response.ok) {

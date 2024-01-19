@@ -107,6 +107,7 @@ if (isset($_POST['signin'])) {
                     <div class="signin-image">
                         <figure><img src="images/loker.jpg" alt="sign up image"></figure>
                         <a href="register.php" class="signup-image-link">Create an account</a>
+                        <a href="forgot_password.php" class="signup-image-link">Forgot Password?</a>
                     </div>
 
                     <div class="signin-form">

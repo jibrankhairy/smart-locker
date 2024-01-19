@@ -2,7 +2,7 @@
 session_start();
 include("conn.php");
 
-class ProfilPengguna {
+class User {
     private $conn;
     private $username;
     private $nama_pengguna;
@@ -53,15 +53,15 @@ class ProfilPengguna {
     }
 }
 
-//instance class ProfilPengguna
-$profilPengguna = new ProfilPengguna($conn);
+//instance class User
+$user = new User($conn);
 
 if (isset($_POST['update'])) {
     $newNama = $_POST['new_nama'];
     $newEmail = $_POST['new_email'];
     $newNohp = $_POST['new_no_hp'];
 
-    $message = $profilPengguna->perbaruiDataPengguna($newNama, $newEmail, $newNohp);
+    $message = $user->perbaruiDataPengguna($newNama, $newEmail, $newNohp);
 }
 
 ?>
@@ -97,7 +97,7 @@ if (isset($_POST['update'])) {
             <div class="sub-menu">
             <div class="user-info">
                 <li class="p-2">
-                    <div class="font-medium"> <?php echo strtoupper($profilPengguna->getNamaPengguna()); ?></div>
+                    <div class="font-medium"> <?php echo strtoupper($user->getNamaPengguna()); ?></div>
                     <div class="text-xs text-white/60 mt-0.5 dark:text-slate-500">Mahasiswa</div>
                 </li>
             </div>
