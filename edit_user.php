@@ -32,6 +32,14 @@ class User {
     }
 
     public function perbaruiDataPengguna($newNama, $newEmail, $newNohp) {
+        // Validasi bahwa semua kolom diisi
+        if (empty($newNama) || empty($newEmail) || empty($newNohp)) {
+            $message = "Mohon isi semua kolom";
+            // Using JavaScript to show an alert if the form is submitted with empty fields
+            echo "<script>alert('$message');</script>";
+            return $message;
+        }
+
         $queryPerbarui = "UPDATE user SET nama = '{$newNama}', email = '{$newEmail}', no_hp = '{$newNohp}' WHERE nim = '{$this->username}'";
 
         if (mysqli_query($this->conn, $queryPerbarui)) {
@@ -53,8 +61,8 @@ class User {
     }
 }
 
-//instance class User
 $user = new User($conn);
+$message = ""; // Define $message here to avoid the undefined variable warning
 
 if (isset($_POST['update'])) {
     $newNama = $_POST['new_nama'];
@@ -62,8 +70,14 @@ if (isset($_POST['update'])) {
     $newNohp = $_POST['new_no_hp'];
 
     $message = $user->perbaruiDataPengguna($newNama, $newEmail, $newNohp);
-}
 
+    if (empty($message)) {
+        // Data berhasil diperbarui, tambahkan tindakan selanjutnya jika diperlukan
+    } else {
+        // Tampilkan pesan kesalahan jika ada
+        // echo "<script>alert('$message');</script>"; // This line is moved inside the perbaruiDataPengguna method
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -116,40 +130,53 @@ if (isset($_POST['update'])) {
 </nav>
 
 <div class="tabular--wrapper">
-<h3 class="main-title">Edit Data Mahasiswa</h3>
-<div class="student-profile print-only">
-    <img src="images/student_default.jpg" alt="user-pic">
-</div>
-<div class="table-container">
-    <form method="post">
-        <table class="edit-table">
-        <tbody>
-                <tr>
-                    <td class="whitespace-nowrap font-medium">Nama</td>
-                    <td>
-                        <input type="text" name="new_nama" class="form-control">
-                    </td>
-                </tr>
-                <tr>
-                    <td class="whitespace-nowrap font-medium">Email</td>
-                    <td>
-                        <input type="email" name="new_email" class="form-control">
-                    </td>
-                </tr>
-                <tr>
-                    <td class="whitespace-nowrap font-medium">No HP</td>
-                    <td>
-                        <input type="no_hp" name="new_no_hp" class="form-control">
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-        <div class="mt-3">
-            <button type="submit" class="btn btn-success" style="font-size: 14px; color: white;" name="update" onclick="tampilkanPopupSukses();">Simpan Data</button>
-            <a href="profile_user.php" class="btn btn-danger" style="font-size: 14px;">Cancel</a>
-        </div>
-    </form>
-</div>
+    <h3 class="main-title">Edit Data Mahasiswa</h3>
+    <!-- <?php
+if ($message) {
+    echo '<script>
+            document.addEventListener("DOMContentLoaded", function () {
+                Swal.fire({
+                    icon: "error",
+                    title: "Error",
+                    text: "' . $message . '"
+                });
+            });
+         </script>';
+}
+?> -->
+    <div class="student-profile print-only">
+        <img src="images/student_default.jpg" alt="user-pic">
+    </div>
+    <div class="table-container">
+        <form method="post">
+            <table class="edit-table">
+                <tbody>
+                    <tr>
+                        <td class="whitespace-nowrap font-medium">Nama</td>
+                        <td>
+                            <input type="text" name="new_nama" class="form-control">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="whitespace-nowrap font-medium">Email</td>
+                        <td>
+                            <input type="email" name="new_email" class="form-control">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="whitespace-nowrap font-medium">No HP</td>
+                        <td>
+                            <input type="no_hp" name="new_no_hp" class="form-control">
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="mt-3">
+                <button type="submit" class="btn btn-success" style="font-size: 14px; color: white;" name="update" onclick="confirmUpdate();">Simpan Data</button>
+                <a href="profile_user.php" class="btn btn-danger" style="font-size: 14px;">Cancel</a>
+            </div>
+        </form>
+    </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -177,15 +204,12 @@ if (isset($_POST['update'])) {
         });
     });
 
-    function tampilkanPopupSukses() {
-        Swal.fire({
-            icon: "success",
-            title: "Sukses",
-            text: "Data berhasil diperbarui!",
-            confirmButtonColor: "#28a745",
-        }).then(() => {
-            window.location.href = 'profile_user.php';
-        });
+    function confirmUpdate() {
+        var isConfirmed = confirm('Apakah Anda yakin ingin menyimpan perubahan?');
+
+        if (isConfirmed) {
+            document.forms[0].submit(); // Submit form jika dikonfirmasi
+        }
     }
 </script>
 </body>

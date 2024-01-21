@@ -98,7 +98,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['signup'])) {
                     </div>
                     <div class="signup-image">
                         <figure><img src="images/loker1.png" alt="sing up image"></figure>
-                        <a href="login.php" class="signup-image-link">I am already have account</a>
+                        <a href="index.php" class="signup-image-link">I am already have account</a>
                     </div>
                 </div>
             </div>
@@ -134,7 +134,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['signup'])) {
                 }).then((result) => {
                     if (result.isConfirmed) {
                         // Redirect ke halaman login jika OK diklik
-                        window.location.href = "login.php";
+                        window.location.href = "index.php";
                     }
                 });
             }

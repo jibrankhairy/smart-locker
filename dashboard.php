@@ -131,7 +131,6 @@ $activeLockers = mysqli_num_rows($resultActiveLockers);
         </div>
     </div>
 
-    <!-- ... (kode HTML lainnya) ... -->
 <script>
     var dt = new Date();
     var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
@@ -146,6 +145,11 @@ $activeLockers = mysqli_num_rows($resultActiveLockers);
     var subMenuVisible = false;
 
     statusSwitch.addEventListener("change", function () {
+        if (this.disabled) {
+            // Mencegah perubahan jika switch dinonaktifkan
+            return;
+        }
+
         var slider = document.querySelector(".slider");
         slider.style.backgroundColor = this.checked ? "#4CAF50" : "#ccc";
 
@@ -156,17 +160,20 @@ $activeLockers = mysqli_num_rows($resultActiveLockers);
     document.addEventListener("DOMContentLoaded", function () {
         var statusSwitch = document.getElementById("statusSwitch");
 
-        // Update toggle switch based on the number of active lockers
+        // Update toggle switch berdasarkan jumlah loker aktif
         if (<?php echo $activeLockers; ?> > 0) {
-                statusSwitch.checked = true;
-                var slider = document.querySelector(".slider");
-                slider.style.backgroundColor = "#4CAF50";
-            } else {
-                statusSwitch.checked = false;
-                var slider = document.querySelector(".slider");
-                slider.style.backgroundColor = "#ccc";
-            }
-});
+            statusSwitch.checked = true;
+            var slider = document.querySelector(".slider");
+            slider.style.backgroundColor = "#4CAF50";
+
+            // Menonaktifkan switch saat dalam keadaan aktif
+            statusSwitch.disabled = true;
+        } else {
+            statusSwitch.checked = false;
+            var slider = document.querySelector(".slider");
+            slider.style.backgroundColor = "#ccc";
+        }
+    });
     document.getElementById("kodeAButton").addEventListener("click", function () {
         if (lockerAktifByUser || statusSwitch.checked) {
         // Locker sudah aktif atau terisi, beri pesan atau tindakan lain yang sesuai
@@ -213,12 +220,11 @@ $activeLockers = mysqli_num_rows($resultActiveLockers);
 
     document.getElementById("kodeBButton").addEventListener("click", function () {
         // Fetch request ke server untuk menjalankan kode B (mengembalikan ke status awal)
-        if (!lockerAktifByUser || !statusSwitch.checked) {
+       if (!lockerAktifByUser || !statusSwitch.checked) {
         // Locker tidak aktif atau belum terisi, beri pesan atau tindakan lain yang sesuai
         console.log("Anda tidak dapat menonaktifkan locker yang tidak aktif atau belum terisi.");
         return;
     }
-
         fetch("http://192.168.1.2/eksekusi-kode-B", { method: 'GET' })
             .then(response => {
                 if (!response.ok) {
