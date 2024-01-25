@@ -2,36 +2,85 @@
 session_start();
 include("conn.php");
 
-if (!isset($_SESSION['user_username'])) {
-    header("location: login.php");
-    exit();
+class User
+{
+    private $conn;
+    private $username;
+    private $nama_pengguna;
+    private $status_locker;
+
+    public function __construct($conn, $username)
+    {
+        $this->conn = $conn;
+        $this->username = $username;
+        $this->ambilDataPengguna();
+    }
+
+    private function ambilDataPengguna()
+    {
+        if (!isset($_SESSION['user_username'])) {
+            header("location: index.php");
+            exit();
+        }
+
+        $query = "SELECT nama, status_locker FROM user WHERE nim = '$this->username'";
+        $result = mysqli_query($this->conn, $query);
+
+        if ($result && mysqli_num_rows($result) > 0) {
+            $row = mysqli_fetch_assoc($result);
+            $this->nama_pengguna = $row['nama'];
+            $this->status_locker = $row['status_locker'];
+            echo '<script>sessionStorage.setItem("lockerStatus", "' . $this->status_locker . '");</script>';
+        } else {
+            $this->nama_pengguna = "Pengguna"; // Default
+            echo '<script>sessionStorage.setItem("lockerStatus", "nonaktif");</script>';
+        }
+    }
+
+    public function getNamaPengguna()
+    {
+        return $this->nama_pengguna;
+    }
+
+    public function getStatusLocker()
+    {
+        return $this->status_locker;
+    }
 }
 
-// Lanjutkan dengan pengambilan nama pengguna dan status loker dari database
-$username = $_SESSION['user_username'];
-$query = "SELECT nama, status_locker FROM user WHERE nim = '$username'";
-$result = mysqli_query($conn, $query);
+class SystemLocker
+{
+    private $conn;
 
-if ($result && mysqli_num_rows($result) > 0) {
-    $row = mysqli_fetch_assoc($result);
-    $nama_pengguna = $row['nama'];
-    
-    // Set session storage based on locker status
-    $status_locker = $row['status_locker'];
-    echo '<script>sessionStorage.setItem("lockerStatus", "' .$status_locker . '");</script>';
-} else {
-    $nama_pengguna = "Pengguna"; // Default
-    
-    // Set session storage to nonaktif if user not found
-    echo '<script>sessionStorage.setItem("lockerStatus", "nonaktif");</script>';
+    public function __construct($conn)
+    {
+        $this->conn = $conn;
+    }
+
+    public function getActiveLockersCount()
+    {
+        $query = "SELECT status_locker FROM user WHERE status_locker = 'aktif'";
+        $result = mysqli_query($this->conn, $query);
+        return mysqli_num_rows($result);
+    }
+
+    public function updateLockerStatus($status)
+    {
+        // Tambahkan kode untuk memperbarui status locker di sini
+        $query = "UPDATE user SET status_locker = '$status' WHERE nim = :nim";
+        // ...
+    }
 }
 
-// Additional query to get all active lockers
-$queryActiveLockers = "SELECT status_locker FROM user WHERE status_locker = 'aktif'";
-$resultActiveLockers = mysqli_query($conn, $queryActiveLockers);
-$activeLockers = mysqli_num_rows($resultActiveLockers);
+// Instance of the User class
+$user = new User($conn, $_SESSION['user_username']);
+
+// Instance of the SystemLocker class
+$systemLocker = new SystemLocker($conn);
+
+// Query tambahan untuk mendapatkan semua loker aktif
+$activeLockers = $systemLocker->getActiveLockersCount();
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -62,7 +111,7 @@ $activeLockers = mysqli_num_rows($resultActiveLockers);
                 <div class="sub-menu">
                     <div class="user-info">
                         <li class="p-2">
-                            <div class="font-medium"> <?php echo strtoupper($nama_pengguna); ?></div>
+                            <div class="font-medium"> <?php echo strtoupper($user->getNamaPengguna()); ?></div>
                             <div class="text-xs text-white/60 mt-0.5 dark:text-slate-500">Mahasiswa</div>
                         </li>
                      </div>
@@ -81,6 +130,8 @@ $activeLockers = mysqli_num_rows($resultActiveLockers);
     </nav>
 
     <div class="tabular--wrapper">
+        <p>SSID : sm4rtl0cker</p>
+        <p>Password : esp8266uno</p>
         <h3 class="main-title">Informasi Locker</h3>
         <div class="table-container">
             <table>
@@ -116,14 +167,14 @@ $activeLockers = mysqli_num_rows($resultActiveLockers);
                         <td>Perpustakaan</td>
                         <td>
                             <label class="switch">
-                                <input type="checkbox" class="statusSwitch">
+                                <input type="checkbox" id="statusSwitch">
                                 <span class="slider"></span>
                             </label>
                         </td>
                         <td>
                             <!-- Tombol untuk Registrasi Locker -->
-                            <button class="kodeAButton">Registrasi</button>
-                            <button class="kodeBButton">Deactive</button>
+                            <button id="kodeAButton">Registrasi</button>
+                            <button id="kodeBButton">Deactive</button>
                         </td>
                     </tr>
                 </tbody>
@@ -156,7 +207,7 @@ $activeLockers = mysqli_num_rows($resultActiveLockers);
         // Simpan status di session storage
         sessionStorage.setItem("lockerStatus", this.checked ? "aktif" : "nonaktif");
     });
-    var lockerAktifByUser = <?php echo json_encode($status_locker === 'aktif'); ?>;
+    var lockerAktifByUser = <?php echo json_encode($user->getStatusLocker() === 'aktif'); ?>;
     document.addEventListener("DOMContentLoaded", function () {
         var statusSwitch = document.getElementById("statusSwitch");
 
@@ -181,7 +232,7 @@ $activeLockers = mysqli_num_rows($resultActiveLockers);
         return;
     }
         // Fetch request ke server untuk menjalankan kode A
-        fetch("http://192.168.1.2/eksekusi-kode-A", { method: 'GET' })
+        fetch("http://192.168.21.108/eksekusi-kode-A", { method: 'GET' })
             .then(response => {
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
@@ -225,7 +276,7 @@ $activeLockers = mysqli_num_rows($resultActiveLockers);
         console.log("Anda tidak dapat menonaktifkan locker yang tidak aktif atau belum terisi.");
         return;
     }
-        fetch("http://192.168.1.2/eksekusi-kode-B", { method: 'GET' })
+        fetch("http://192.168.21.108/eksekusi-kode-B", { method: 'GET' })
             .then(response => {
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);

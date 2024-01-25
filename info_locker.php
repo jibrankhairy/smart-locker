@@ -2,10 +2,39 @@
 session_start();
 include("conn.php");
 
+class StatusLocker
+{
+    private $conn;
+
+    public function __construct($conn)
+    {
+        $this->conn = $conn;
+    }
+
+    public function getActiveUsers()
+    {
+        $query = "SELECT id, nama, no_hp, email, status_locker FROM user WHERE status_locker = 'aktif'";
+        $result = mysqli_query($this->conn, $query);
+        
+        $activeUsers = [];
+        while ($row = mysqli_fetch_assoc($result)) {
+            $activeUsers[] = $row;
+        }
+
+        return $activeUsers;
+    }
+
+    public function deleteUser($userId)
+    {
+        $query = "DELETE FROM user WHERE id = $userId";
+        return mysqli_query($this->conn, $query);
+    }
+}
+
 if (!isset($_SESSION['admin_username'])) {
-  // Jika tidak ada sesi admin_username, alihkan ke halaman login
-  header("location: login.php");
-  exit();
+    // Jika tidak ada sesi admin_username, alihkan ke halaman login
+    header("location: login.php");
+    exit();
 }
 
 // Lanjutkan dengan pengambilan nama pengguna dari database
@@ -14,26 +43,28 @@ $query = "SELECT username FROM admin WHERE username = '$username'";
 $result = mysqli_query($conn, $query);
 
 if ($result && mysqli_num_rows($result) > 0) {
-  $row = mysqli_fetch_assoc($result);
-  $nama_pengguna = $row['username'];
+    $row = mysqli_fetch_assoc($result);
+    $nama_pengguna = $row['username'];
 } else {
-  // Handle jika data nama tidak ditemukan
-  $nama_pengguna = "Pengguna"; // Default
+    // Handle jika data nama tidak ditemukan
+    $nama_pengguna = "Pengguna"; // Default
 }
+// instance class
+$statusLocker = new StatusLocker($conn);
 
 if (isset($_POST['delete'])) {
     $userId = $_POST['user_id'];
-    $query = "DELETE FROM user WHERE id = $userId";
-    if (mysqli_query($conn, $query)) {
+    $deleteResult = $statusLocker->deleteUser($userId);
+
+    if ($deleteResult) {
         $message = "Pengguna berhasil dihapus!";
     } else {
         $message = "Gagal menghapus pengguna: " . mysqli_error($conn);
     }
 }
 
-// Query untuk mengambil data user dari tabel "user" sesuai dengan kondisi status locker
-$query = "SELECT id, nama, no_hp, email, status_locker FROM user WHERE status_locker = 'aktif'";
-$result = mysqli_query($conn, $query);
+// Mendapatkan data pengguna yang aktif dari StatusLocker
+$activeUsers = $statusLocker->getActiveUsers();
 ?>
 
 <!DOCTYPE html>
@@ -99,16 +130,17 @@ $result = mysqli_query($conn, $query);
                     </tr>
                 </thead>
                 <tbody>
-                    <?php
-                    while ($row = mysqli_fetch_assoc($result)) {
-                        echo "<tr>";
-                        echo "<td>" . $row['id'] . "</td>";
-                        echo "<td>" . $row['nama'] . "</td>";
-                        echo "<td>" . $row['no_hp'] . "</td>";
-                        echo "<td>" . $row['email'] . "</td>";
-                        echo "<td>" . $row['status_locker'] . "</td>";
+                <?php
+                        foreach ($activeUsers as $user) {
+                            echo "<tr>";
+                            echo "<td>" . $user['id'] . "</td>";
+                            echo "<td>" . $user['nama'] . "</td>";
+                            echo "<td>" . $user['no_hp'] . "</td>";
+                            echo "<td>" . $user['email'] . "</td>";
+                            echo "<td>" . $user['status_locker'] . "</td>";
+                            echo "</tr>";
                         }
-                    ?>
+                        ?>
                     </tbody>
                 </thead>
             </table>

@@ -2,38 +2,70 @@
 session_start();
 include("conn.php");
 
-if (!isset($_SESSION['admin_username'])) {
-  // Jika tidak ada sesi user_username, alihkan ke halaman login
-  header("location: login.php");
-  exit();
-}
+class Admin
+{
+    private $conn;
 
-// Lanjutkan dengan pengambilan nama pengguna dari database
-$username = $_SESSION['admin_username'];
-$query = "SELECT username FROM admin WHERE username = '$username'";
-$result = mysqli_query($conn, $query);
+    public function __construct($conn)
+    {
+        $this->conn = $conn;
 
-if ($result && mysqli_num_rows($result) > 0) {
-  $row = mysqli_fetch_assoc($result);
-  $nama_pengguna = $row['username'];
-} else {
-  // Handle jika data nama tidak ditemukan
-  $nama_pengguna = "Pengguna"; // Default
-}
+        if (!isset($_SESSION['admin_username'])) {
+            header("location: index.php");
+            exit();
+        }
+    }
 
-if (isset($_POST['delete'])) {
-    $userId = $_POST['user_id'];
-    $query = "DELETE FROM user WHERE id = $userId";
-    if (mysqli_query($conn, $query)) {
-        $message = "Pengguna berhasil dihapus!";
-    } else {
-        $message = "Gagal menghapus pengguna: " . mysqli_error($conn);
+    public function getUserData()
+    {
+        $username = $_SESSION['admin_username'];
+        $query = "SELECT username FROM admin WHERE username = '$username'";
+        $result = mysqli_query($this->conn, $query);
+
+        if ($result && mysqli_num_rows($result) > 0) {
+            $row = mysqli_fetch_assoc($result);
+            $nama_pengguna = $row['username'];
+        } else {
+            $nama_pengguna = "Pengguna";
+        }
+
+        return $nama_pengguna;
+    }
+
+    public function deleteUser($userId)
+    {
+        $query = "DELETE FROM user WHERE id = $userId";
+        if (mysqli_query($this->conn, $query)) {
+            return "Pengguna berhasil dihapus!";
+        } else {
+            return "Gagal menghapus pengguna: " . mysqli_error($this->conn);
+        }
+    }
+
+    public function getUsersData()
+    {
+        $query = "SELECT id, nama, nim, email, no_hp, tgl_buat_akun FROM user";
+        $result = mysqli_query($this->conn, $query);
+
+        $userData = [];
+        while ($row = mysqli_fetch_assoc($result)) {
+            $userData[] = $row;
+        }
+
+        return $userData;
     }
 }
 
-// Query untuk mengambil data user dari tabel "user" beserta tanggal pembuatan (tgl_buat)
-$query = "SELECT id, nama, nim, email, no_hp, tgl_buat_akun FROM user";
-$result = mysqli_query($conn, $query);
+//instance class of Admin
+$admin = new Admin($conn);
+
+if (isset($_POST['delete'])) {
+    $userId = $_POST['user_id'];
+    $message = $admin->deleteUser($userId);
+}
+
+$nama_pengguna = $admin->getUserData();
+$userData = $admin->getUsersData();
 
 ?>
 <!DOCTYPE html>
@@ -104,24 +136,24 @@ $result = mysqli_query($conn, $query);
                     </tr>
                     <tbody>
                     <?php
-                    while ($row = mysqli_fetch_assoc($result)) {
-                        echo "<tr>";
-                        echo "<td>" . $row['id'] . "</td>";
-                        echo "<td>" . $row['nama'] . "</td>";
-                        echo "<td>" . $row['nim'] . "</td>";
-                        echo "<td>" . $row['email'] . "</td>";
-                        echo "<td>" . $row['no_hp'] . "</td>";
-                        echo "<td>" . $row['tgl_buat_akun'] . "</td>";
-                        echo "<td>
-                        <div class='btn-group btn-group-horizontal'>
-                          <form method='post' onsubmit='return confirmDelete()' style='display: inline;'>
-                            <input type='hidden' name='user_id' value='" . $row['id'] . "'>
-                            <button type='submit' class='btn' style='background-color: #dc3545 !important; color: #fff !important;' name='delete'>Delete</button>
-                          </form>
-                        </div>
-                      </td>";
-}
-?>
+                foreach ($userData as $row) {
+                    echo "<tr>";
+                    echo "<td>" . $row['id'] . "</td>";
+                    echo "<td>" . $row['nama'] . "</td>";
+                    echo "<td>" . $row['nim'] . "</td>";
+                    echo "<td>" . $row['email'] . "</td>";
+                    echo "<td>" . $row['no_hp'] . "</td>";
+                    echo "<td>" . $row['tgl_buat_akun'] . "</td>";
+                    echo "<td>
+                            <div class='btn-group btn-group-horizontal'>
+                                <form method='post' onsubmit='return confirmDelete()' style='display: inline;'>
+                                    <input type='hidden' name='user_id' value='" . $row['id'] . "'>
+                                    <button type='submit' class='btn' style='background-color: #dc3545 !important; color: #fff !important;' name='delete'>Delete</button>
+                                </form>
+                            </div>
+                          </td>";
+                }
+                ?>
                     </tbody>
                 </thead>
             </table>
