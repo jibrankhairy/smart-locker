@@ -130,8 +130,6 @@ $activeLockers = $systemLocker->getActiveLockersCount();
     </nav>
 
     <div class="tabular--wrapper">
-        <p>SSID : sm4rtl0cker</p>
-        <p>Password : esp8266uno</p>
         <h3 class="main-title">Informasi Locker</h3>
         <div class="table-container">
             <table>
@@ -163,6 +161,54 @@ $activeLockers = $systemLocker->getActiveLockersCount();
                     </tr>
                     <tr>
                         <td>2</td>
+                        <td><span class="tanggalwaktu"></span></td>
+                        <td>Perpustakaan</td>
+                        <td>
+                            <label class="switch">
+                                <input type="checkbox" id="statusSwitch">
+                                <span class="slider"></span>
+                            </label>
+                        </td>
+                        <td>
+                            <!-- Tombol untuk Registrasi Locker -->
+                            <button id="kodeAButton">Registrasi</button>
+                            <button id="kodeBButton">Deactive</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td><span class="tanggalwaktu"></span></td>
+                        <td>Perpustakaan</td>
+                        <td>
+                            <label class="switch">
+                                <input type="checkbox" id="statusSwitch">
+                                <span class="slider"></span>
+                            </label>
+                        </td>
+                        <td>
+                            <!-- Tombol untuk Registrasi Locker -->
+                            <button id="kodeAButton">Registrasi</button>
+                            <button id="kodeBButton">Deactive</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td><span class="tanggalwaktu"></span></td>
+                        <td>Perpustakaan</td>
+                        <td>
+                            <label class="switch">
+                                <input type="checkbox" id="statusSwitch">
+                                <span class="slider"></span>
+                            </label>
+                        </td>
+                        <td>
+                            <!-- Tombol untuk Registrasi Locker -->
+                            <button id="kodeAButton">Registrasi</button>
+                            <button id="kodeBButton">Deactive</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
                         <td><span class="tanggalwaktu"></span></td>
                         <td>Perpustakaan</td>
                         <td>
